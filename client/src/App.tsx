@@ -1,8 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
 import { FileDropzone } from "./components/FileDropzone";
+import { SubmittedImageStatus } from "./components/SubmittedImageStatus";
 import { SecretMessageInput } from "./components/SecretMessageInput";
 import { ProcessedImage } from "./components/ProcessedImage";
 import { LoadingOverlay } from "./components/LoadingOverlay";
@@ -41,6 +42,8 @@ export default function App() {
   const [processedImageUrl, setProcessedImageUrl] = useState<string | null>(null);
   const [decodedMessage, setDecodedMessage] = useState<string | null>(null);
   const [showHero, setShowHero] = useState(true);
+  
+  const textInputRef = useRef<HTMLDivElement>(null);
 
   const handleModeChange = useCallback((newMode: Mode) => {
     setMode(newMode);
@@ -58,7 +61,23 @@ export default function App() {
     setProcessingState('idle');
     setProcessedImageUrl(null);
     setDecodedMessage(null);
-  }, []);
+    
+    // Auto-scroll to text input if in encode mode
+    if (mode === 'encode') {
+      setTimeout(() => {
+        textInputRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        
+        // Focus the textarea
+        const textarea = textInputRef.current?.querySelector('textarea');
+        if (textarea) {
+          textarea.focus();
+        }
+      }, 300);
+    }
+  }, [mode]);
 
   const handleProcess = async () => {
     if (!selectedFile) return;
@@ -76,6 +95,17 @@ export default function App() {
         setDecodedMessage(decoded);
       }
       setProcessingState('completed');
+      
+      // Auto-scroll to results when processing is complete
+      setTimeout(() => {
+        const resultsSection = document.getElementById('results-section');
+        if (resultsSection) {
+          resultsSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }, 500);
     } catch (error) {
       console.error('Processing failed:', error);
       setProcessingState('idle');
@@ -100,6 +130,15 @@ export default function App() {
     setShowHero(mode === 'encode');
   };
 
+  const handleResubmitImage = () => {
+    setSelectedFile(null);
+    setProcessingState('idle');
+    setProcessedImageUrl(null);
+    setDecodedMessage(null);
+    setSecretMessage('');
+    setShowHero(mode === 'encode');
+  };
+
   const getButtonText = () => {
     if (processingState === 'processing') return 'Processing...';
     if (processingState === 'completed') return 'Download';
@@ -109,7 +148,7 @@ export default function App() {
   const canProcess = selectedFile && (mode === 'decode' || secretMessage.trim());
 
   return (
-    <div className="min-h-screen bg-[#122117] text-white relative">
+    <div className="min-h-screen bg-gray-950 text-white relative">
       <ParticleBackground />
       <div className="relative z-10">
         <Header mode={mode} onModeChange={handleModeChange} />
@@ -148,7 +187,7 @@ export default function App() {
               >
                 {mode === 'encode' ? 'Encode Your Message' : 'Decode Hidden Data'}
               </motion.h2>
-              <p className="text-[#96c4a8] text-base sm:text-lg max-w-2xl mx-auto">
+              <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">
                 {mode === 'encode' 
                   ? 'Securely hide your secret message within an image using advanced steganography techniques.'
                   : 'Upload an image to extract and reveal any hidden data embedded within it.'
@@ -156,18 +195,44 @@ export default function App() {
               </p>
             </motion.div>
 
-            {/* File Dropzone */}
-            <FileDropzone
-              onFileSelect={handleFileSelect}
-              title={`Drag and drop your image here`}
-              subtitle={mode === 'encode' ? "Or select from your system memory" : "Or click to select a file from your computer"}
-              disabled={processingState === 'processing' || processingState === 'completed'}
-            />
+            {/* File Upload Section */}
+            <AnimatePresence mode="wait">
+              {!selectedFile || processingState === 'completed' ? (
+                <motion.div
+                  key="file-dropzone"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <FileDropzone
+                    onFileSelect={handleFileSelect}
+                    title={`Drag and drop your image here`}
+                    subtitle={mode === 'encode' ? "Or select from your system memory" : "Or click to select a file from your computer"}
+                    disabled={processingState === 'processing'}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="submitted-status"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <SubmittedImageStatus
+                    fileName={selectedFile.name}
+                    onResubmit={handleResubmitImage}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Secret Message Input (Encode Mode Only) */}
             <AnimatePresence>
-              {mode === 'encode' && selectedFile && (
+              {mode === 'encode' && selectedFile && processingState !== 'completed' && (
                 <motion.div
+                  ref={textInputRef}
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
@@ -176,7 +241,7 @@ export default function App() {
                   <SecretMessageInput
                     value={secretMessage}
                     onChange={setSecretMessage}
-                    disabled={processingState === 'processing' || processingState === 'completed'}
+                    disabled={processingState === 'processing'}
                   />
                 </motion.div>
               )}
@@ -198,13 +263,13 @@ export default function App() {
                     className={`
                       px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 shadow-lg
                       ${canProcess && processingState !== 'processing'
-                        ? 'bg-[#38e07a] text-[#122117] hover:bg-[#38e07a]/90 shadow-[#38e07a]/25'
-                        : 'bg-[#264533] text-white/50 cursor-not-allowed shadow-none'
+                        ? 'bg-cyan-500 text-gray-900 hover:bg-cyan-400 shadow-cyan-500/25'
+                        : 'bg-gray-700 text-gray-400 cursor-not-allowed shadow-none'
                       }
                     `}
                     whileHover={canProcess && processingState !== 'processing' ? { 
                       scale: 1.05,
-                      boxShadow: "0 20px 40px rgba(56, 224, 122, 0.4)"
+                      boxShadow: "0 20px 40px rgba(6, 182, 212, 0.4)"
                     } : {}}
                     whileTap={canProcess && processingState !== 'processing' ? { scale: 0.95 } : {}}
                   >
@@ -226,7 +291,7 @@ export default function App() {
               imageUrl={processedImageUrl || ''}
               mode={mode}
               onDownload={handleDownload}
-              decodedMessage={decodedMessage  ?? undefined}
+              decodedMessage={decodedMessage ?? undefined}
               show={processingState === 'completed' && !!processedImageUrl}
             />
 
@@ -242,7 +307,7 @@ export default function App() {
                 >
                   <motion.button
                     onClick={handleReset}
-                    className="bg-[#264533] text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-[#264533]/80 transition-all duration-300 border border-white/10 hover:border-white/20"
+                    className="bg-gray-800 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-700 transition-all duration-300 border border-gray-600 hover:border-gray-500"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >

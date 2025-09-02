@@ -27,7 +27,7 @@ export function GlitchText({ children, className = "" }: GlitchTextProps) {
       {isGlitching && (
         <>
           <motion.span
-            className={`absolute inset-0 text-[#38e07a] ${className}`}
+            className={`absolute inset-0 text-cyan-400 ${className}`}
             style={{ clipPath: "inset(0 0 95% 0)" }}
             animate={{
               x: [0, -2, 2, 0],
@@ -38,7 +38,7 @@ export function GlitchText({ children, className = "" }: GlitchTextProps) {
             {children}
           </motion.span>
           <motion.span
-            className={`absolute inset-0 text-[#ff0080] ${className}`}
+            className={`absolute inset-0 text-purple-500 ${className}`}
             style={{ clipPath: "inset(85% 0 0 0)" }}
             animate={{
               x: [0, 2, -2, 0],

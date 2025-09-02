@@ -27,7 +27,7 @@ const encodeAPI = async (imageFile: File, message: string): Promise<Blob> => {
   formData.append('image', imageFile);
   formData.append('message', message);
 
-  const response = await fetch('http://localhost:5000/encode', {
+  const response = await fetch('https://invisidata.onrender.com/encode', {
     method: 'POST',
     body: formData,
   });
@@ -58,7 +58,7 @@ const decodeAPI = async (imageFile: File): Promise<{ message: string, imageUrl: 
   const formData = new FormData();
   formData.append('image', imageFile);
 
-  const response = await fetch('http://localhost:5000/decode', {
+  const response = await fetch('https://invisidata.onrender.com/decode', {
     method: 'POST',
     body: formData,
   });

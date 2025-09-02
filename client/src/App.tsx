@@ -13,7 +13,7 @@ import { Footer } from "./components/Footer";
 type Mode = 'encode' | 'decode';
 type ProcessingState = 'idle' | 'processing' | 'completed';
 
-// Mock API functions
+// Mock Encode API
 const mockEncodeAPI = async (imageFile: File, message: string): Promise<string> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 2000));
@@ -21,6 +21,24 @@ const mockEncodeAPI = async (imageFile: File, message: string): Promise<string> 
   return URL.createObjectURL(imageFile);
 };
 
+// Actual Encode API
+const encodeAPI = async (imageFile: File, message: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+  formData.append('message', message);
+
+  const response = await fetch('http://localhost:5000/encode', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) throw new Error('Encoding failed');
+  // Assuming backend returns the processed image as a blob
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+};
+
+// Mock Decode API
 const mockDecodeAPI = async (imageFile: File): Promise<string> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 2000));
@@ -32,6 +50,25 @@ const mockDecodeAPI = async (imageFile: File): Promise<string> => {
     "Project Alpha is approved for next phase."
   ];
   return messages[Math.floor(Math.random() * messages.length)];
+};
+
+// Actual Decode API
+const decodeAPI = async (imageFile: File): Promise<{ message: string, imageUrl: string }> => {
+  const formData = new FormData();
+  formData.append('image', imageFile);
+
+  const response = await fetch('http://localhost:5000/decode', {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) throw new Error('Decoding failed');
+  const data = await response.json();
+  // data should have { message: string, image: base64 or url }
+  return {
+    message: data.message,
+    imageUrl: data.imageUrl // or construct from base64 if needed
+  };
 };
 
 export default function App() {
@@ -88,15 +125,21 @@ export default function App() {
       if (mode === 'encode') {
         const processedUrl = await mockEncodeAPI(selectedFile, secretMessage);
         setProcessedImageUrl(processedUrl);
+        // const processedUrl = await encodeAPI(selectedFile, secretMessage);
+        // setProcessedImageUrl(processedUrl);
+        // setDecodedMessage(null);
       } else {
         const processedUrl = URL.createObjectURL(selectedFile);
         const decoded = await mockDecodeAPI(selectedFile);
         setProcessedImageUrl(processedUrl);
         setDecodedMessage(decoded);
+        // const result = await decodeAPI(selectedFile);
+        // setProcessedImageUrl(result.imageUrl || URL.createObjectURL(selectedFile));
+        // setDecodedMessage(result.message);
       }
       setProcessingState('completed');
       
-      // Auto-scroll to results when processing is complete
+      // Auto-scroll to results when processing is complete 
       setTimeout(() => {
         const resultsSection = document.getElementById('results-section');
         if (resultsSection) {

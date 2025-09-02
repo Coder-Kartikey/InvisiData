@@ -121,6 +121,16 @@ export default function App() {
     }
   };
 
+  const scrollToDropzone = () => {
+    const dropzoneSection = document.querySelector('[data-dropzone]');
+    if (dropzoneSection) {
+      dropzoneSection.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  };
+
   const handleReset = () => {
     setProcessingState('idle');
     setSelectedFile(null);
@@ -128,6 +138,11 @@ export default function App() {
     setProcessedImageUrl(null);
     setDecodedMessage(null);
     setShowHero(mode === 'encode');
+    
+    // Scroll to dropzone after reset
+    setTimeout(() => {
+      scrollToDropzone();
+    }, 300);
   };
 
   const handleResubmitImage = () => {
@@ -137,6 +152,35 @@ export default function App() {
     setDecodedMessage(null);
     setSecretMessage('');
     setShowHero(mode === 'encode');
+  };
+
+  const handleHome = () => {
+    setMode('encode');
+    setProcessingState('idle');
+    setSelectedFile(null);
+    setSecretMessage('');
+    setProcessedImageUrl(null);
+    setDecodedMessage(null);
+    setShowHero(true);
+    
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleStartHiding = () => {
+    setMode('encode');
+    setShowHero(false);
+    setTimeout(() => {
+      scrollToDropzone();
+    }, 300);
+  };
+
+  const handleDecodeData = () => {
+    setMode('decode');
+    setShowHero(false);
+    setTimeout(() => {
+      scrollToDropzone();
+    }, 300);
   };
 
   const getButtonText = () => {
@@ -151,7 +195,7 @@ export default function App() {
     <div className="min-h-screen bg-gray-950 text-white relative">
       <ParticleBackground />
       <div className="relative z-10">
-        <Header mode={mode} onModeChange={handleModeChange} />
+        <Header mode={mode} onModeChange={handleModeChange} onHome={handleHome} />
         
         <main className="flex-1 flex flex-col">
         <AnimatePresence mode="wait">
@@ -163,7 +207,7 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <HeroSection />
+              <HeroSection onStartHiding={handleStartHiding} onDecodeData={handleDecodeData} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -215,6 +259,7 @@ export default function App() {
               ) : (
                 <motion.div
                   key="submitted-status"
+                  data-dropzone
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}

@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Github, Twitter, Linkedin, Shield, Lock, Eye, Zap, Mail, MapPin } from "lucide-react";
+import { Github, Twitter, Linkedin, Shield, Lock, Eye, Zap, Mail, Briefcase } from "lucide-react";
 
 export function Footer() {
   return (
@@ -10,9 +10,9 @@ export function Footer() {
       transition={{ delay: 0.5, duration: 0.5 }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {/* Brand Section */}
-          <div className="col-span-1 md:col-span-2 lg:col-span-1">
+          <div className="col-span-1">
             <motion.div 
               className="flex items-center gap-3 mb-6"
               whileHover={{ scale: 1.02 }}
@@ -31,22 +31,19 @@ export function Footer() {
             
             {/* Contact Info */}
             <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-gray-400 text-sm">
+              <div className="flex items-center hover:text-blue-500 gap-3 text-gray-400 text-sm">
                 <Mail className="w-4 h-4" />
-                <span>contact@invisidata.com</span>
-              </div>
-              <div className="flex items-center gap-3 text-gray-400 text-sm">
-                <MapPin className="w-4 h-4" />
-                <span>San Francisco, CA</span>
+                <span><a href="mailto:pkartikey5757@gmail.com">pkartikey5757@gmail.com</a></span>
               </div>
             </div>
             
             {/* Social Icons */}
             <div className="flex gap-3">
               {[
-                { Icon: Twitter, href: "#", color: "hover:bg-blue-500/20 hover:text-blue-400" },
-                { Icon: Github, href: "#", color: "hover:bg-gray-600/20 hover:text-gray-300" },
-                { Icon: Linkedin, href: "#", color: "hover:bg-blue-600/20 hover:text-blue-400" }
+                { Icon: Briefcase, href: "https://coderkp.me/", color: "hover:bg-blue-600/20 hover:text-blue-400" },
+                { Icon: Linkedin, href: "https://www.linkedin.com/in/coderkp/", color: "hover:bg-blue-600/20 hover:text-blue-400" },
+                { Icon: Github, href: "https://github.com/Coder-Kartikey", color: "hover:bg-gray-600/20 hover:text-gray-300" },
+                { Icon: Twitter, href: "https://x.com/coderkp_", color: "hover:bg-blue-500/20 hover:text-blue-400" },
               ].map(({ Icon, href, color }, index) => (
                 <motion.a
                   key={index}
@@ -86,52 +83,6 @@ export function Footer() {
               ))}
             </div>
           </div>
-
-          {/* Company */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-6">Company</h3>
-            <div className="space-y-3">
-              {[
-                { text: "About Us", desc: "Our mission & vision" },
-                { text: "Careers", desc: "Join our team" },
-                { text: "Blog", desc: "Latest insights" },
-                { text: "Press Kit", desc: "Media resources" }
-              ].map(({ text, desc }, index) => (
-                <motion.a
-                  key={index}
-                  href="#"
-                  className="group block"
-                  whileHover={{ x: 5 }}
-                >
-                  <span className="text-gray-300 hover:text-white transition-colors text-sm font-medium">{text}</span>
-                  <span className="block text-xs text-gray-500 group-hover:text-gray-400">{desc}</span>
-                </motion.a>
-              ))}
-            </div>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="text-white font-bold text-lg mb-6">Resources</h3>
-            <div className="space-y-3">
-              {[
-                { text: "Documentation", desc: "API & guides" },
-                { text: "Security", desc: "Privacy & safety" },
-                { text: "Support", desc: "Get help" },
-                { text: "Status", desc: "System health" }
-              ].map(({ text, desc }, index) => (
-                <motion.a
-                  key={index}
-                  href="#"
-                  className="group block"
-                  whileHover={{ x: 5 }}
-                >
-                  <span className="text-gray-300 hover:text-white transition-colors text-sm font-medium">{text}</span>
-                  <span className="block text-xs text-gray-500 group-hover:text-gray-400">{desc}</span>
-                </motion.a>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Bottom Section */}
@@ -143,14 +94,6 @@ export function Footer() {
         >
           <div className="flex flex-col md:flex-row items-center gap-4 text-gray-400 text-sm">
             <p>© 2024 InvisiData. All rights reserved.</p>
-            <div className="flex items-center gap-4">
-              <motion.a href="#" className="hover:text-white transition-colors" whileHover={{ scale: 1.05 }}>
-                Privacy Policy
-              </motion.a>
-              <motion.a href="#" className="hover:text-white transition-colors" whileHover={{ scale: 1.05 }}>
-                Terms of Service
-              </motion.a>
-            </div>
           </div>
           
           <div className="flex items-center gap-2 text-sm text-gray-400">

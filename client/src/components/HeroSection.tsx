@@ -1,7 +1,12 @@
 import { motion } from "motion/react";
 import { Lock, Eye, Zap } from "lucide-react";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  onStartHiding?: () => void;
+  onDecodeData?: () => void;
+}
+
+export function HeroSection({ onStartHiding, onDecodeData }: HeroSectionProps) {
   return (
     <motion.section
       className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden"
@@ -154,6 +159,7 @@ export function HeroSection() {
             transition={{ delay: 1.3, duration: 0.8 }}
           >
             <motion.button
+              onClick={onStartHiding}
               className="group relative bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg shadow-cyan-500/25 overflow-hidden"
               whileHover={{ 
                 scale: 1.05,
@@ -171,6 +177,7 @@ export function HeroSection() {
             </motion.button>
             
             <motion.button
+              onClick={onDecodeData}
               className="group px-8 py-4 rounded-xl font-bold text-lg text-gray-300 border-2 border-gray-600 hover:border-cyan-400 hover:text-cyan-400 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

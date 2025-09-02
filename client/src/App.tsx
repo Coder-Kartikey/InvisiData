@@ -123,19 +123,25 @@ export default function App() {
 
     try {
       if (mode === 'encode') {
-        const processedUrl = await mockEncodeAPI(selectedFile, secretMessage);
-        setProcessedImageUrl(processedUrl);
-        // const processedUrl = await encodeAPI(selectedFile, secretMessage);
+        // For Mock API
+        // const processedUrl = await mockEncodeAPI(selectedFile, secretMessage);
         // setProcessedImageUrl(processedUrl);
-        // setDecodedMessage(null);
-      } else {
-        const processedUrl = URL.createObjectURL(selectedFile);
-        const decoded = await mockDecodeAPI(selectedFile);
+
+        // For Actual API
+        const processedUrl = await encodeAPI(selectedFile, secretMessage);
         setProcessedImageUrl(processedUrl);
-        setDecodedMessage(decoded);
-        // const result = await decodeAPI(selectedFile);
-        // setProcessedImageUrl(result.imageUrl || URL.createObjectURL(selectedFile));
-        // setDecodedMessage(result.message);
+        setDecodedMessage(null);
+      } else {
+        // For Mock API
+        // const processedUrl = URL.createObjectURL(selectedFile);
+        // const decoded = await mockDecodeAPI(selectedFile);
+        // setProcessedImageUrl(processedUrl);
+        // setDecodedMessage(decoded);
+
+        // For Actual API
+        const result = await decodeAPI(selectedFile);
+        setProcessedImageUrl(result.imageUrl || URL.createObjectURL(selectedFile));
+        setDecodedMessage(result.message);
       }
       setProcessingState('completed');
       

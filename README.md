@@ -1,6 +1,6 @@
 # InvisiData
 
-![InvisiData Banner](https://github.com/Coder-Kartikey/InvisiData/raw/main/assets/banner.png) <!-- Custom banner image path if available -->
+![InvisiData Banner](https://github.com/Coder-Kartikey/InvisiData/blob/main/image.png) <!-- Custom banner image path if available -->
 
 ## Overview
 
